@@ -5,21 +5,20 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
-  logo: assets/DutchRoseMedia-logo_redesign_RGB.svg
   favicon: assets/favicon.ico
   palette:
     - scheme: slate
       toggle:
         icon: material/weather-sunny
         name: light mode
-      primary: yellow
+      primary: amber
       accent: orange
 
     - scheme: default
       toggle:
         icon: material/weather-night
         name: dark mode
-      primary: black
+      primary: amber
       accent: orange
 
 markdown_extensions:
