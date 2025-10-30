@@ -2,6 +2,6 @@
 
 ## Libraries:
 
-* Placeables Toolkit:[com.dutchrosemedia.placeablestoolkit](/placeablestoolkit)
+* Placeables Toolkit: [com.dutchrosemedia.placeablestoolkit](/docs/placeablestoolkit)
 
 
