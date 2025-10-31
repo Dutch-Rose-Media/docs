@@ -2,17 +2,23 @@
 
 ## Introduction
 
+This toolkit is a helper library you can use in order to use AR functionalities in your project free of hustle.
+
+
 ## Installation
 
 You can use the unity package manager to install the library:
 
 1. Open package manager from Window -> Package Management -> Package Manager
-![package manager](assets/placeablestoolkit/packagemanager.png){ width="300",align=right }
+![package manager](assets/placeablestoolkit/packagemanager.png){ width="300" }
 
 2. Choose the Plus Icon -> Install package from git URL...
-![package manager](assets/placeablestoolkit/installfromgit.png){ width="300",align=right }
+![package manager](assets/placeablestoolkit/installfromgit.png){ width="300" }
 
 3. Copy the `TODO: git url` and hit install.
+
+4. In order to import the Sample project import it from the Package Manager
+![package manager](assets/placeablestoolkit/importsample.png){ width="300" }
 
 ## Core Components Breakdown
 
@@ -29,29 +35,39 @@ classDiagram
   }
   class ARLifeCycleManager{
     Point of entry for an AR scene
-    Initiates connection with underlying AR SDK
-    Parses a PlaceablesGlobalConfig object.
+    Initiates connection
+    with underlying 
+    AR SDK Parses a 
+    PlaceablesGlobalConfig object.
   }
   class PlaceablesGlobalConfig{
     ScriptableObject 
-    allowing developers to configure an AR session
-    in a flow-chart like manner from the inspector
+    allowing developers to
+    configure an AR session
+    in a flow-chart like manner
+    from the inspector
   }
   class ARPlaceablesManager{
-    ARFoudation specific impl. of a 
+    ARFoudation specific
+    impl. of a 
     placeables manager
   }
   class AbstractPlaceablesManager{
     Abstract interface 
-    allowing `placeables` to register themselves for placement
+    allowing `placeables` 
+    to register themselves
+    for placement
   }
   class ARImageTargerManager{
     MonoBehaviour 
-    managing lifecycle of an underlying ARImageTracking component
+    managing lifecycle of
+    an underlying 
+    ARImageTracking component
   }
   class Placeable{
     Scriptable object
-    defining placement behaviour for AR objects
+    defining placement
+    behaviour for AR objects
   }
 ```
 
@@ -106,6 +122,20 @@ A placeable is an asset on the filesystem that can be supplied to an implementat
 
 - **CenterScreenImmediate**: Instantiates an object using a raycast from the center of the screen. It does not ask the user to confirm and places immediately. 
 
+    + **PrefabToPlace**: which prefab will be used to be placed 
+
+    + **StartInEditMode**: makes sure the gestureliner starts in an `Unlocked` state 
+
+    + **AnchorToPlane**: leverages a concept called `ARAnchors` to make sure an object is physically anchored to a given place on a plane 
+
+    + **ScaleToFrustumWhenPlaced**: scales the object to fit within the camera view when placed 
+
+    + **ClampScaleToMinAndMax**: allows the developer to define a min and max scale 
+
+    + **RotateToCameraWhenPlaced**: rotates the object to face the camera upon placement 
+
+    + **ImageTarget**: A PNG that will be used for imagetracking. The prefab is then placed when the ImageTargetManager finds said image in the camera view. 
+
 ![Center Screen Imidiate](assets/placeablestoolkit/placeable-inspec-placement-center-imid.png)
 
 - **ImageTarget**: A PNG that will be used for imagetracking. The prefab is then placed when the ImageTargetManager finds said image in the camera view. 
@@ -116,6 +146,38 @@ A placeable is an asset on the filesystem that can be supplied to an implementat
 
 ![Relative Transform](assets/placeablestoolkit/placeable-inspec-placement-reltrans.png)
 
+### Gesture Manager
+
+There is a `GestureListener` `MonoBehaviour` which lets objects placed in AR easily respond to events thrown by the `GestureManager` class in a codeless manner. It is automatically attached to an instantiated prefab by the `PlaceablesManager`. 
+
+``` mermaid
+classDiagram
+  ARGestureManager <-- AbstractGestureListener:Registers to
+  AbstractGestureListener <-- ARGestureListener:Implements
+
+  class ARGestureListener{
+    ARFoundation specific
+    impl. of gestures listener
+  }
+  class AbstractGestureListener{
+    Abstract component letting
+    objects placed in AR receive
+    event-based manipulation
+    notifications.
+  }
+  class ARGestureManager{
+   Global component handling user input.
+   Allows easy object manipulation interactions.
+  }
+```
+
+#### Supported Gestures
+
+- Lock by Tap
+- Unlock by long press
+- Pinch in and out for scaling
+- Drag the object to move
+- Rotate 
 
 ## Dependencies
 
