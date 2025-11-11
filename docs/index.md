@@ -3,5 +3,7 @@
 
 ## Libraries:
 
+### CMS (Content Management Service): [Docs](/docs/cms)
 ### Placeables Toolkit: [com.dutchrosemedia.placeablestoolkit](/docs/placeablestoolkit)
+
 
