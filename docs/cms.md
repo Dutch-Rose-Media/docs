@@ -15,6 +15,8 @@ A Content Management System for managing applications, templates, projects, and 
 
 WIP: You can fetch the Docker Image from the DockerHub
 
+Now proceed to [Setup from DockerHub instructions](#setup-from-dockerhub-instructions) below.
+
 ### 2. Build from Git
 
 Clone the repository:
@@ -24,9 +26,9 @@ git clone https://github.com/Dutch-Rose-Media/CMS.git
 cd CMS
 ```
 
-Then follow the [Setup Instructions](#setup-instructions) below.
+Then follow the [Setup from GIT instructions](#setup-from-git-instructions) below.
 
-## Setup Instructions
+## Setup from GIT instructions
 
 ### 1. Create your own .env file
 
@@ -105,6 +107,102 @@ docker-compose exec web bundle exec rake db:reset
 
 # Access MySQL console
 docker-compose exec db mysql -u root -p
+```
+
+## Setup from DockerHub instructions
+
+### 1. Create your own .env file
+
+Same as above in [1. Create your own .env file](#1-create-your-own-env-file)
+
+### 2. Generate Secret Key Base
+
+Same as above in [2. Generate Secret Key Base](#2-generate-secret-key-base)
+
+### 3. Setup required services
+
+The CMS requires a MySQL database. You can use Docker Compose to set up the database service.
+Create a `docker-compose.yml` file with the following content:
+
+```yaml
+version: '3.8'
+services:
+    db:
+        image: mysql:8.0
+        command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+            - ./docker/mysql-init.sh:/docker-entrypoint-initdb.d/init.sh
+
+    web:
+    image: dutch-rose-media/cms:v1
+    platform: linux/amd64 # Ensures compatibility on Apple Silicon Macs
+    restart: always
+    command: bash -c "mkdir -p tmp/pids tmp/sockets log && bundle exec rake db:create db:migrate db:seed && bundle exec unicorn -c config/unicorn.rb"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      # Database Configuration
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # Rails production configuration
+      # RAILS_ENV: production
+      # Rails debug configuration
+      RAILS_ENV: ${RAILS_ENV:-development}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_SERVE_STATIC_FILES: ${RAILS_SERVE_STATIC_FILES:-true}
+      RAILS_LOG_TO_STDOUT: "true"
+
+      # AWS Configuration
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+
+      # CORS Configuration
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+volumes:
+  mysql_data_prod:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+
+```
+
+!!! info "Services Explanation"
+    - `db`: MySQL database service
+    - `web`: Dutch Rose CMS application service
+
+    Be sure to adjust environment variables as needed.
+
+### 4. Start services
+
+Now all you need to do is start the services:
+
+```bash
+docker-compose up -d
 ```
 
 ## Environment Variables Reference
