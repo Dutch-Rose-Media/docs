@@ -108,6 +108,8 @@ You should see output similar to:
 => #<ApiKey id: 2, access_token: "9e2ae5b0fe6f4bb2612c8aa498ef87df", created_at: "2025-11-14 14:50:39", updated_at: "2025-11-14 14:50:39">
 ```
 
+Finally to exit the rails console, type `exit`
+
 !!! Danger "Keep the secret key safe!"
     - Be sure to keep the secret key as you will need to use it in other libraries to access the CMS.
 
